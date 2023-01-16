@@ -11,6 +11,13 @@ spacex_df = pd.read_csv("spacex_launch_dash.csv")
 max_payload = spacex_df['Payload Mass (kg)'].max()
 min_payload = spacex_df['Payload Mass (kg)'].min()
 
+# Constructing the list of dict options for dcc.Dropdown
+options_list_dict = [{'label': 'All Sites', 'value': 'ALL'}] 
+options_list = list(spacex_df['Launch Site'].unique())
+for option in options_list:
+    dict_option = {'label': option, 'value': option}
+    options_list_dict.append(dict_option)
+
 # Create a dash application
 app = dash.Dash(__name__)
 
@@ -21,9 +28,11 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
                                 # TASK 1: Add a dropdown list to enable Launch Site selection
                                 # The default select value is for ALL sites
                                 dcc.Dropdown(
-                                    options=list(spacex_df['Launch Site'].unique()),
-                                    value='CCAFS LC-40',
-                                    id='site-dropdown'),
+                                    id='site-dropdown',
+                                    options=options_list_dict,
+                                    value='ALL',
+                                    placeholder='Select a Launch Site here',
+                                    searchable=True),
                                 html.Br(),
 
                                 # TASK 2: Add a pie chart to show the total successful launches count for all sites
