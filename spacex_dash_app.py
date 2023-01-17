@@ -1,8 +1,7 @@
 # Import required libraries
 import pandas as pd
 import dash
-import dash_html_components as html
-import dash_core_components as dcc
+from dash import html, dcc
 from dash.dependencies import Input, Output
 import plotly.express as px
 
@@ -89,7 +88,26 @@ def get_pie_chart(entered_site):
 
 # TASK 4:
 # Add a callback function for `site-dropdown` and `payload-slider` as inputs, `success-payload-scatter-chart` as output
-
+@app.callback(Output(component_id='success-payload-scatter-chart', component_property='figure'),
+              Input(component_id='site-dropdown', component_property='value'),
+              Input(component_id='payload-slider', component_property='value'))
+def get_scatter_chart(entered_site, slider_range):
+    filtered_df = spacex_df.copy()
+    if entered_site == 'ALL':
+        low, high = slider_range
+        mask = (filtered_df['Payload Mass (kg)'] > low) & (filtered_df['Payload Mass (kg)'] < high)
+        fig = px.scatter(
+            filtered_df[mask], x="Payload Mass (kg)", y="class", 
+            color="Booster Version Category")
+        return fig
+    else:
+        data = filtered_df[filtered_df['Launch Site']==entered_site]
+        low, high = slider_range
+        mask = (data['Payload Mass (kg)'] > low) & (data['Payload Mass (kg)'] < high)
+        fig = px.scatter(
+            data[mask], x="Payload Mass (kg)", y="class", 
+            color="Booster Version Category")
+        return fig
 
 # Run the app
 if __name__ == '__main__':
